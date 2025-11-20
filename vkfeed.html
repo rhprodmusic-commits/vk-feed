@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>VK Feed</title>
+<script src="https://vk.com/js/api/openapi.js?169"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+.post {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+.post img {
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="feed"></div>
+
+<script>
+VK.init({ apiId: 51756626 }); // любой публичный appId
+
+VK.Api.call('wall.get', { owner_id: -214226798, count: 10, v: '5.236' }, function(data) {
+    if (!data.response) return;
+
+    const posts = data.response.items;
+    const feed = document.getElementById('feed');
+
+    feed.innerHTML = posts.map(p => {
+        let img = '';
+        if (p.attachments && p.attachments[0]?.photo) {
+            const sizes = p.attachments[0].photo.sizes;
+            img = `<img src="${sizes[sizes.length-1].url}">`;
+        }
+
+        return `
+            <div class="post">
+                <div>${p.text.replace(/\n/g,'<br>')}</div>
+                ${img}
+            </div>
+        `;
+    }).join("");
+});
+</script>
+
+</body>
+</html>
